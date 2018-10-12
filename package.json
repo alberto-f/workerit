@@ -1,0 +1,19 @@
+{
+  "name": "worker-fn",
+  "version": "1.0.0",
+  "description": "Allow you to create function as workers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alberto-f/workerfn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alberto-f/workerfn/issues"
+  },
+  "homepage": "https://github.com/alberto-f/workerfn#readme"
+}
