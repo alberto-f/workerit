@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "nws",
-    "test": ""
+    "build": "rollup index.js --o dist/workit.js --f cjs",
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "test": "standard"
   },
   "keywords": [
     "js",
@@ -14,6 +17,8 @@
   "author": "Alberto Fernandez Reyes",
   "license": "ISC",
   "devDependencies": {
-    "nws": "^1.1.1"
+    "nws": "^1.1.1",
+    "rollup": "^0.66.6",
+    "standard": "^12.0.1"
   }
 }
