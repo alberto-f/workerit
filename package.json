@@ -4,8 +4,8 @@
   "description": "Worker your functions",
   "main": "index.js",
   "scripts": {
-    "start": "nws",
-    "build": "rollup index.js --o dist/workit.js --f cjs",
+    "start": "nws -d dist/:examples/",
+    "build": "rollup index.js --o dist/workit.js --f umd --name 'Workit'",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "test": "standard"

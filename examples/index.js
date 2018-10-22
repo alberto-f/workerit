@@ -1,6 +1,4 @@
-import Workit from '../dist/Workit'
-
-const workit = new Workit()
+const workit = new window.Workit()
 
 workit.addEventListener('message', function (evt) {
   console.log('Message = ' + evt.data)
