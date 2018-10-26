@@ -2,7 +2,7 @@
   "name": "workit",
   "version": "1.0.0",
   "description": "Worker your functions",
-  "main": "index.js",
+  "main": "dist/workit.js",
   "scripts": {
     "start": "nws -d dist/:examples/",
     "build": "rollup index.js --o dist/workit.js --f umd --name 'Workit'",
@@ -10,12 +10,20 @@
     "lint:fix": "standard --fix",
     "test": "standard"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:alberto-f/workit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alberto-f/workit/issues"
+  },
+  "homepage": "https://github.com/alberto-f/workit/blob/master/README.md",
   "keywords": [
-    "js",
+    "webworker",
     "worker"
   ],
   "author": "Alberto Fernandez Reyes",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "nws": "^1.1.1",
     "rollup": "^0.66.6",
