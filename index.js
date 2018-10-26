@@ -11,7 +11,7 @@ const STATES = {
   END: 'END'
 }
 
-function Workit () {
+function Workerit () {
   this._state = STATES.INIT
 
   this._statesAllowed = Object.keys(STATES)
@@ -23,11 +23,11 @@ function Workit () {
   })
 }
 
-Workit.prototype._isAllowedState = function _isAllowedState (state) {
+Workerit.prototype._isAllowedState = function _isAllowedState (state) {
   return this._statesAllowed.some(stateAllowed => stateAllowed === state)
 }
 
-Workit.prototype._setState = function _setState (state) {
+Workerit.prototype._setState = function _setState (state) {
   if (!this._isAllowedState(state)) {
     throw new Error('State ' + state + ' not allowed.')
   }
@@ -35,29 +35,29 @@ Workit.prototype._setState = function _setState (state) {
   this._state = state
 }
 
-Workit.prototype._isState = function _isState (state) {
+Workerit.prototype._isState = function _isState (state) {
   return this._state === state
 }
 
-Workit.prototype.addEventListener = function addEventListener (eventName, cb) {
+Workerit.prototype.addEventListener = function addEventListener (eventName, cb) {
   if (this._listenersAllowed.some(name => name === eventName)) {
     this._listeners[eventName].push(cb)
   }
 }
 
-Workit.prototype.removeEventListener = function removeEventListener (eventName, cb) {
+Workerit.prototype.removeEventListener = function removeEventListener (eventName, cb) {
 
 }
 
-Workit.prototype.terminate = function terminate () {
+Workerit.prototype.terminate = function terminate () {
   if (this._isState(STATES.RUNNING)) {
     this._worker.terminate()
   } else {
-    throw new Error('Workit is not running.')
+    throw new Error('Workerit is not running.')
   }
 }
 
-Workit.prototype.install = function install (fn) {
+Workerit.prototype.install = function install (fn) {
   const script = this._createWorkerScript(fn)
   const scriptBlob = new Blob([script], { type: 'application/javascript' })
   const scriptUrl = URL.createObjectURL(scriptBlob)
@@ -65,7 +65,7 @@ Workit.prototype.install = function install (fn) {
   this._worker = new Worker(scriptUrl)
 }
 
-Workit.prototype._registerListeners = function _updateListeners () {
+Workerit.prototype._registerListeners = function _updateListeners () {
   this._listenersAllowed.forEach(eventName => {
     this._listeners[eventName].forEach(listener => {
       // Remove prev listeners
@@ -80,7 +80,7 @@ Workit.prototype._registerListeners = function _updateListeners () {
   })
 }
 
-Workit.prototype.postMessage = function postMessage (data) {
+Workerit.prototype.postMessage = function postMessage (data) {
   // Update listeners
   this._registerListeners()
 
@@ -91,8 +91,8 @@ Workit.prototype.postMessage = function postMessage (data) {
   this._worker.postMessage(data)
 }
 
-Workit.prototype._createWorkerScript = function _createWorkerScript (fn) {
+Workerit.prototype._createWorkerScript = function _createWorkerScript (fn) {
   return `const f = ${fn}; self.onmessage = (e) => f(self, e)`
 }
 
-export default Workit
+export default Workerit

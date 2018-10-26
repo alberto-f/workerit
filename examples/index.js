@@ -1,18 +1,18 @@
-const workit = new window.Workit()
+const workerit = new window.Workerit()
 
-workit.addEventListener('message', function (evt) {
+workerit.addEventListener('message', function (evt) {
   console.log('Message = ' + evt.data)
 })
 
-workit.addEventListener('messageerror', function (error) {
+workerit.addEventListener('messageerror', function (error) {
   console.log('MessageError = ' + error)
 })
 
-workit.addEventListener('error', function () {
+workerit.addEventListener('error', function () {
   console.log('Error')
 })
 
-workit.install(function (scope, event) {
+workerit.install(function (scope, event) {
   /*
    * We can import scripts but requires full path
    * importScripts('http://localhost:3030/embeed.js')
@@ -25,4 +25,4 @@ workit.install(function (scope, event) {
   scope.postMessage(res)
 })
 
-workit.postMessage(5000)
+workerit.postMessage(5000)

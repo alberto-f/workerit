@@ -2,22 +2,22 @@
   "name": "workerit",
   "version": "0.0.1",
   "description": "Worker your functions",
-  "main": "dist/workit.js",
+  "main": "dist/workerit.js",
   "scripts": {
     "start": "nws -d dist/:examples/",
-    "build": "rollup index.js --o dist/workit.js --f umd --name 'Workit'",
+    "build": "rollup index.js --o dist/workerit.js --f umd --name 'Workerit'",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "test": "standard"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:alberto-f/workit.git"
+    "url": "git@github.com:alberto-f/workerit.git"
   },
   "bugs": {
-    "url": "https://github.com/alberto-f/workit/issues"
+    "url": "https://github.com/alberto-f/workerit/issues"
   },
-  "homepage": "https://github.com/alberto-f/workit/blob/master/README.md",
+  "homepage": "https://github.com/alberto-f/workerit/blob/master/README.md",
   "keywords": [
     "webworker",
     "worker"
