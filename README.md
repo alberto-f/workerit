@@ -1,4 +1,4 @@
-# Workit
+# Workerit
 **Workit** tries to simplify the way the write code for Web Workers. No need to create a specific file for it anymore. 
 
 With **Workit**, you only need to create a Workit instance and install any function you want on it.

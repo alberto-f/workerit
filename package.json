@@ -1,5 +1,5 @@
 {
-  "name": "workit",
+  "name": "workerit",
   "version": "0.0.1",
   "description": "Worker your functions",
   "main": "dist/workit.js",
