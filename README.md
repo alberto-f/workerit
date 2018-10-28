@@ -19,7 +19,7 @@ npm install --save workerit
 
 ## Usage
 
-```
+```js
 /*
  * workerit wraps Web Worker and add an extra method .install(Function).
  */
