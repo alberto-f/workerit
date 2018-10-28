@@ -54,3 +54,5 @@ workerit.postMessage(5000)
 
 ```
 
+# Release History
+
