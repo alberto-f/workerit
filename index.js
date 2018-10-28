@@ -65,7 +65,7 @@ Workerit.prototype.install = function install (fn) {
   this._worker = new Worker(scriptUrl)
 }
 
-Workerit.prototype._registerListeners = function _updateListeners () {
+Workerit.prototype._registerListeners = function _registerListeners () {
   this._listenersAllowed.forEach(eventName => {
     this._listeners[eventName].forEach(listener => {
       // Remove prev listeners

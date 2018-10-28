@@ -8,7 +8,7 @@
     "build": "rollup index.js --o dist/workerit.js --f umd --name 'Workerit'",
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "test": "npm run lint",
+    "test": "nyc mocha --recursive './specs/*.js'",
     "precommit": "npm test"
   },
   "repository": {
@@ -26,7 +26,10 @@
   "author": "Alberto Fernandez Reyes",
   "license": "MIT",
   "devDependencies": {
+    "chai": "^4.2.0",
     "husky": "^1.1.2",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
     "rollup": "^0.66.6",
     "standard": "^12.0.1"
   },
