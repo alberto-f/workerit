@@ -140,6 +140,16 @@ Workerit.prototype._addListener = function _addListener (type, listener) {
   }
 }
 
+Workerit.prototype._removeListener = function _removeListener (eventName, listenerFn) {
+  const _listeners = this._getListeners(eventName)
+  const index = _listeners && _listeners.length
+    ? _listeners.indexOf(listenerFn)
+    : -1
+
+  if (index > -1) {
+    _listeners.splice(index, 1)
+  }
+}
 
 Workerit.prototype._registerListeners = function _registerListeners () {
   this._getListenersAllowed().forEach(eventName => {
