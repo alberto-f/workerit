@@ -1,7 +1,11 @@
 const workerit = new window.Workerit()
 
-workerit.addEventListener('message', function (evt) {
-  console.log('Message = ' + evt.data)
+// workerit.addEventListener('message', function (evt) {
+//   console.log('Message')
+// })
+
+workerit.addEventListener('message:progress', function (evt) {
+  console.log('Message:progress')
 })
 
 workerit.addEventListener('messageerror', function (error) {
@@ -18,11 +22,13 @@ workerit.install(function (scope, event) {
    * importScripts('http://localhost:3030/embeed.js')
    */
   let res = 0
-  for (let i = 0; i <= event.data; i++) {
-    for (let j = 0; j <= event.data; j++) { res += i }
+  for (let i = 0; i <= event.data.times; i++) {
+    for (let j = 0; j <= event.data.times; j++) { res += i }
+    scope.notify('progress', i / event.data.times)
   }
 
   scope.postMessage(res)
 })
 
-workerit.postMessage(5000)
+const arrBuf = new ArrayBuffer(8)
+workerit.postMessage({ times: 5000 })

@@ -41,29 +41,32 @@ function Workerit () {
 
   this._statesAllowed = Object.keys(STATES)
   this._listenersAllowed = ['message', 'messageerror', 'error']
+  
 
   this._listeners = {}
   this._listenersAllowed.forEach(name => {
     this._listeners[name] = []
   })
+
+  this._customListeners = {}
 }
 
+/*
+ * State accessors
+ */
 Workerit.STATES = STATES
 
 Workerit.prototype._isAllowedState = function _isAllowedState (state) {
   return this._statesAllowed.some(stateAllowed => stateAllowed === state)
 }
 
-/*
- * State accessors
- */
 Workerit.prototype._getState = function _getState () {
   return this._state
 }
 
 Workerit.prototype._setState = function _setState (state) {
   if (!this._isAllowedState(state)) {
-    throw new Error('State ' + state + ' not allowed.')
+    throw new Error('State *' + state + '* not allowed.')
   }
 
   this._state = state
@@ -72,7 +75,6 @@ Workerit.prototype._setState = function _setState (state) {
 Workerit.prototype._isState = function _isState (state) {
   return this._state === state
 }
-
 
 /*
  * Wrapping Worker methods
@@ -88,6 +90,8 @@ Workerit.prototype.removeEventListener = function removeEventListener (eventName
 Workerit.prototype.postMessage = function postMessage (data, transfer) {
   // Update listeners
   this._registerListeners()
+
+  this._registerCustomListeners()
 
   // Set state to RUNNING
   this._setState(Workerit.STATES.RUNNING)
@@ -122,21 +126,56 @@ Workerit.prototype._getListenersAllowed = function _getListenersAllowed () {
   return this._listenersAllowed
 }
 
-Workerit.prototype._isListenerAllowed = function _isListenerAllowed (type) {
-  return this._getListenersAllowed().some(name => name === type)
+Workerit.prototype._isListenerAllowed = function _isListenerAllowed (eventName) {
+  return this._getListenersAllowed().some(name => name === eventName)
 }
 
-Workerit.prototype._getListeners = function _getListeners (type) {
-  if (type !== undefined && this._isListenerAllowed(type)) {
-    return this._listeners[type]
-  } else {
+Workerit.prototype._getListeners = function _getListeners (eventName) {
+  if (eventName == undefined) {
     return this._listeners
+  } else if (this._isListenerAllowed(eventName)) {
+    return this._listeners[eventName]
+  } else {
+    throw new Error('#_getListeners: Unknown listener *' + eventName + '*')
   }
 }
 
-Workerit.prototype._addListener = function _addListener (type, listener) {
-  if (this._isListenerAllowed(type)) {
-    this._listeners[eventName].push(listener)
+/*
+ * Custom Listeners
+ */
+Workerit.prototype._addCustomListener = function _addCustomListener (eventName, listenerFn) {
+  this._customListeners[eventName]
+  ? this._customListeners[eventName].push(listenerFn)
+  : this._customListeners[eventName] = [listenerFn]
+}
+
+Workerit.prototype._getCustomListeners = function _getCustomListeners (channel) {
+  return this._customListeners[channel] || []
+}
+
+Workerit.prototype._extractCustomListenerEventName = function _extractCustomListenerEventName (fullEventName) {
+  const regex = /^(?:message):(.*)$/ig
+  const response = regex.exec(fullEventName)
+  if (response.length > 1) {
+    return response[1]
+  } else {
+    throw new Error('#_extractCustomListenerEventName: Unknown listener *' + fullEventName + '*')
+  }
+}
+
+Workerit.prototype._isCustomListener = function _isCustomListener (eventName) {
+  return this._getCustomListeners().some(name => name === eventName) ||
+          !!this._extractCustomListenerEventName(eventName)
+}
+
+Workerit.prototype._addListener = function _addListener (eventName, listenerFn) {
+  if (this._isListenerAllowed(eventName)) {
+    this._listeners[eventName].push(listenerFn)
+  } else if (this._isCustomListener(eventName)) {
+    const resolvedEventName = this._extractCustomListenerEventName(eventName)
+    this._addCustomListener(resolvedEventName, listenerFn)
+  } else {
+    throw new Error('#_addListener: Unknown listener *' + eventName + '*')
   }
 }
 
@@ -166,12 +205,15 @@ Workerit.prototype._registerListeners = function _registerListeners () {
   })
 }
 
-
-/*
- * Worker script
- */
-Workerit.prototype._createWorkerScript = function _createWorkerScript (fn) {
-  return `const f = ${fn}; self.onmessage = (e) => f(self, e)`
+Workerit.prototype._registerCustomListeners = function _registerCustomListeners () {
+  // Register new listeners
+  this._worker.addEventListener('message', (evt) => {
+    const { channel } = evt.data
+    const listenersFn = this._getCustomListeners(channel)
+    if (listenersFn) {
+      listenersFn.forEach( listenerFn => listenerFn(evt) )
+    }
+  })
 }
 
 /*
@@ -185,6 +227,19 @@ Workerit.prototype.install = function install (fn) {
   this._worker = new Worker(scriptUrl)
 }
 
+/*
+ * Worker script
+ */
+Workerit.prototype._createWorkerScript = function _createWorkerScript (fn) {
+  function notify (self) {
+    return (channel, data) => self.postMessage({ channel, data })
+  }
 
+  if (typeof fn === 'function') {
+    return `self.notify = ${notify}(self); const f = ${fn}; self.onmessage = (e) => f(self, e)`
+  } else {
+    throw Error('#_createWorkerScript: Expect a function but got *' + typeof fn + '*')
+  }
+}
 
 export default Workerit
