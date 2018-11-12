@@ -1,11 +1,35 @@
-/* globals Worker, Blob */
+/* globals Worker, Blob, ImageData, ArrayBuffer,
+  Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array
+*/
+
+/* Utils */
+const typedArray = [
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Int32Array,
+  Uint32Array,
+  Float32Array,
+  Float64Array
+]
+
+const isTypedArray = (transferable) => {
+  return typedArray.some(typed => transferable instanceof typed)
+}
+
+const isTransferableObject = (transferable) => {
+  return (transferable instanceof ArrayBuffer ||
+    transferable instanceof ImageData ||
+    isTypedArray(transferable))
+}
 
 /*
  *
  * Workit Class
  *
  */
-
 const STATES = {
   INIT: 'INIT',
   RUNNING: 'RUNNING',
@@ -54,24 +78,33 @@ Workerit.prototype._isState = function _isState (state) {
  * Wrapping Worker methods
  */
 Workerit.prototype.addEventListener = function addEventListener (eventName, cb) {
-  if (this._isListenerAllowed(eventName)) {
-    this._addListener(eventName, cb)
-  }
+  this._addListener(eventName, cb)
 }
 
 Workerit.prototype.removeEventListener = function removeEventListener (eventName, cb) {
-
+  this._removeListener(eventName, cb)
 }
 
-Workerit.prototype.postMessage = function postMessage (data) {
+Workerit.prototype.postMessage = function postMessage (data, transfer) {
   // Update listeners
   this._registerListeners()
 
   // Set state to RUNNING
   this._setState(Workerit.STATES.RUNNING)
 
+  // Create data structure that worker will receive.
+  const d = this._createPostMessageData(data, transfer)
+
   // Start Worker
-  this._worker.postMessage(data)
+  if (isTransferableObject(transfer)) {
+    this._worker.postMessage(d, [transfer])
+  } else {
+    this._worker.postMessage(d)
+  }
+}
+
+Workerit.prototype._createPostMessageData = function _createPostMessageData (data, transfer) {
+  return Object.assign({}, data, { transferredData: transfer })
 }
 
 Workerit.prototype.terminate = function terminate () {
